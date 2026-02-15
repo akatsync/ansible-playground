@@ -1,0 +1,37 @@
+---
+- name: Install Docker on VM
+  hosts: vm
+  become: true
+  tasks:
+    - name: Update apt cache (Debian/Ubuntu)
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+
+    - name: Install Docker package (Debian/Ubuntu)
+      ansible.builtin.apt:
+        name:
+          - docker.io
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install Docker package (RHEL/CentOS/Fedora)
+      ansible.builtin.dnf:
+        name:
+          - docker
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Enable and start Docker service
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Add remote user to docker group (optional)
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+      when: ansible_user is defined

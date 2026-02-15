@@ -1,0 +1,3 @@
+---
+# Non-secret variables for hosts in the [vm] group.
+# Put safe defaults here.
